@@ -28,3 +28,34 @@ kubectl port-forward -n minio svc/minio-1787660754-console 9001:9001
 \`\`\`
 
 Console accessible sur http://localhost:9001, connexion réussie avec l'utilisateur `rootuser`.
+
+
+
+
+## 4. Bucket MinIO pour Velero
+
+Création via la console MinIO (Buckets → Create Bucket) : bucket nommé `velero`.
+
+## 5. Access key MinIO pour Velero
+
+Création via la console (Access Keys → Create access key). Clés enregistrées localement dans un fichier `credentials-velero` (non commité, exclu par `.gitignore`) :
+
+\`\`\`
+[default]
+aws_access_key_id = ********
+aws_secret_access_key = ********
+\`\`\`
+
+## 6. Installation de Velero
+
+\`\`\`bash
+velero install \\
+  --provider aws \\
+  --plugins velero/velero-plugin-for-aws:v1.2.1 \\
+  --bucket velero \\
+  --secret-file ./credentials-velero \\
+  --use-volume-snapshots=false \\
+  --backup-location-config region=minio,s3ForcePathStyle="true",s3Url=http://minio-1787660754.minio.svc:9000
+\`\`\`
+
+Résultat : `Velero is installed! ⛵`. Connexion à MinIO validée avec `velero backup-location get` → `PHASE: Available`.
