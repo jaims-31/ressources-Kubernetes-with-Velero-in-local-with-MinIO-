@@ -83,3 +83,24 @@ velero backup describe nginx-backup
 
 Résultat : `Phase: Completed`, 16/16 items sauvegardés. Le bucket `velero` contient un nouveau dossier `backups/nginx-backup/` avec 9 fichiers (14,2 KiB au total, dont `nginx-backup.tar.gz`).
 
+
+
+
+## 9. Suppression du namespace (simulation de la catastrophe)
+
+\`\`\`bash
+kubectl delete namespace demo-app
+kubectl get all -n demo-app
+\`\`\`
+
+Résultat : namespace supprimé, `No resources found in demo-app namespace` — confirmation que toutes les ressources ont bien disparu.
+
+## 10. Restauration
+
+\`\`\`bash
+velero restore create --from-backup nginx-backup
+velero restore get
+kubectl get all -n demo-app
+\`\`\`
+
+Résultat : restauration `Completed` . Toutes les ressources (`Pod`, `Deployment`, `Service`) sont recréées à l'identique dans `demo-app`, Pod `1/1 Running`.
