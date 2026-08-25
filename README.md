@@ -59,3 +59,27 @@ velero install \\
 \`\`\`
 
 Résultat : `Velero is installed! ⛵`. Connexion à MinIO validée avec `velero backup-location get` → `PHASE: Available`.
+
+
+
+
+
+## 7. Déploiement de l'application de test
+
+Fichier `demo-app.yaml` : namespace `demo-app` + Deployment nginx (1 replica) + Service ClusterIP.
+
+\`\`\`bash
+kubectl apply -f demo-app.yaml
+\`\`\`
+
+Résultat : Pod, Deployment et Service nginx créés et opérationnels (`1/1 Running`) dans le namespace `demo-app`.
+
+## 8. Backup manuel avec la CLI Velero
+
+\`\`\`bash
+velero backup create nginx-backup --include-namespaces demo-app
+velero backup describe nginx-backup
+\`\`\`
+
+Résultat : `Phase: Completed`, 16/16 items sauvegardés. Le bucket `velero` contient un nouveau dossier `backups/nginx-backup/` avec 9 fichiers (14,2 KiB au total, dont `nginx-backup.tar.gz`).
+
